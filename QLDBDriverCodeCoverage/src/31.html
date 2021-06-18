@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\utils\QldbHash.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using Amazon.IonDotnet;
+    using Amazon.IonDotnet.Builders;
+    using Amazon.IonDotnet.Tree;
+    using Amazon.IonDotnet.Tree.Impl;
+    using Amazon.IonHashDotnet;
+
+    /// &lt;summary&gt;
+    /// A QLDB hash is either a 256 bit number or a special empty hash.
+    /// &lt;/summary&gt;
+    internal class QldbHash
+    {
+        private const int HashSize = 32;
+        private static readonly IIonHasherProvider HasherProvider = new CryptoIonHasherProvider(&quot;SHA256&quot;);
+        private static readonly IValueFactory ValueFactory = new ValueFactory();
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;QldbHash&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;qldbHash&quot;&gt;Byte array of hash code.&lt;/param&gt;
+        internal QldbHash(byte[] qldbHash)
+        {
+            if (qldbHash == null || !(qldbHash.Length == HashSize || qldbHash.Length == 0))
+            {
+                throw new ArgumentException($&quot;Hashes must either be empty or {HashSize} bytes long&quot;);
+            }
+
+            this.Hash = qldbHash;
+        }
+
+        /// &lt;summary&gt;
+        /// Gets hash codes.
+        /// &lt;/summary&gt;
+        internal byte[] Hash { get; private set; }
+
+        /// &lt;inheritdoc/&gt;
+        public override string ToString()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// &lt;summary&gt;
+        /// The QldbHash of an IonValue is just the IonHash of that value.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;value&quot;&gt;Value to be hashed.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;Hashed result.&lt;/returns&gt;
+        internal static QldbHash ToQldbHash(string value)
+        {
+            return ToQldbHash(ValueFactory.NewString(value ?? string.Empty));
+        }
+
+        /// &lt;summary&gt;
+        /// The QldbHash of an IonValue is just the IonHash of that value.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;value&quot;&gt;Ion Value to be hashed.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;Hashed result.&lt;/returns&gt;
+        internal static QldbHash ToQldbHash(IIonValue value)
+        {
+            IIonReader reader = IonReaderBuilder.Build(value);
+            IIonHashReader hashReader = IonHashReaderBuilder.Standard()
+                .WithHasherProvider(HasherProvider)
+                .WithReader(reader)
+                .Build();
+            while (hashReader.MoveNext() != IonType.None)
+            {
+            }
+
+            return new QldbHash(hashReader.Digest());
+        }
+
+        /// &lt;summary&gt;
+        /// Calculates the QLDB hash.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;that&quot;&gt;Hashed PartiQL statement.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;Returns a QldbHash instance.&lt;/returns&gt;
+        internal QldbHash Dot(QldbHash that)
+        {
+            byte[] concatenated = JoinHashesPairwise(this.Hash, that.Hash);
+            HashAlgorithm hashAlgorithm = HashAlgorithm.Create(&quot;SHA256&quot;);
+            return new QldbHash(hashAlgorithm.ComputeHash(concatenated));
+        }
+
+        /// &lt;summary&gt;
+        /// Takes two hashes, sorts them, and concatenates them.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;h1&quot;&gt;Hash codes of the first hashed PartiQL statement.&lt;/param&gt;
+        /// &lt;param name=&quot;h2&quot;&gt;Hash codes of the second hashed PartiQL statement.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;No object or value is returned by this method when it completes.&lt;/returns&gt;
+        private static byte[] JoinHashesPairwise(byte[] h1, byte[] h2)
+        {
+            if (h1.Length == 0)
+            {
+                return h2;
+            }
+
+            if (h2.Length == 0)
+            {
+                return h1;
+            }
+
+            HashComparer comparer = new HashComparer();
+            if (comparer.Compare(h1, h2) &lt; 0)
+            {
+                return h1.Concat(h2).ToArray();
+            }
+            else
+            {
+                return h2.Concat(h1).ToArray();
+            }
+        }
+
+        private class HashComparer : IComparer&lt;byte[]&gt;
+        {
+            public int Compare(byte[] h1, byte[] h2)
+            {
+                if (h1.Length != HashSize || h2.Length != HashSize)
+                {
+                    throw new ArgumentException(&quot;Invalid hash&quot;);
+                }
+
+                for (var i = h1.Length - 1; i &gt;= 0; i--)
+                {
+                    var byteEqual = (sbyte)h1[i] - (sbyte)h2[i];
+                    if (byteEqual != 0)
+                    {
+                        return byteEqual;
+                    }
+                }
+
+                return 0;
+            }
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[32,9,32,107,1],[33,9,33,81,1],[40,9,40,43,1],[41,9,41,10,1],[42,13,42,92,1],[43,13,43,14,0],[44,17,44,102,0],[47,13,47,34,1],[48,9,48,10,1],[53,32,53,36,1],[53,37,53,49,1],[57,9,57,10,0],[58,13,58,49,0],[69,9,69,10,1],[70,13,70,78,1],[71,9,71,10,1],[81,9,81,10,1],[82,13,82,63,1],[83,13,86,26,1],[87,13,87,58,1],[88,13,88,14,1],[89,13,89,14,1],[91,13,91,54,1],[92,9,92,10,1],[102,9,102,10,1],[103,13,103,76,1],[104,13,104,74,1],[105,13,105,74,1],[106,9,106,10,1],[117,9,117,10,1],[118,13,118,32,1],[119,13,119,14,0],[120,17,120,27,0],[123,13,123,32,1],[124,13,124,14,0],[125,17,125,27,0],[128,13,128,56,1],[129,13,129,46,1],[130,13,130,14,1],[131,17,131,48,1],[134,13,134,14,1],[135,17,135,48,1],[137,9,137,10,1],[142,13,142,14,1],[143,17,143,68,1],[144,17,144,18,0],[145,21,145,65,0],[148,22,148,43,1],[148,45,148,51,1],[148,53,148,56,0],[149,17,149,18,1],[150,21,150,65,1],[151,21,151,40,1],[152,21,152,22,1],[153,25,153,42,1],[155,17,155,18,0],[157,17,157,26,0],[158,13,158,14,1]]);
+    </script>
+  </body>
+</html>

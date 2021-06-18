@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\retry\RetryPolicy.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    /// &lt;summary&gt;
+    /// RetryPolicy used to retry the transactions.
+    /// The default max retries is 4, and the default backoff strategy is &lt;see cref=&quot;ExponentBackoffStrategy&quot;/&gt;.
+    /// &lt;/summary&gt;
+    public class RetryPolicy
+    {
+        /// &lt;summary&gt;
+        /// Gets the backoff strategy.
+        /// &lt;/summary&gt;
+        public IBackoffStrategy BackoffStrategy { get; private set; }
+
+        /// &lt;summary&gt;
+        /// Gets the maximum number of retries.
+        /// &lt;/summary&gt;
+        public int MaxRetries { get; private set; }
+
+        /// &lt;summary&gt;
+        /// Gets the Builder of the &lt;see cref=&quot;RetryPolicy&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;The builder of &lt;see cref=&quot;RetryPolicy&quot;/&gt;.&lt;/returns&gt;
+        public static RetryPolicyBuilder Builder()
+        {
+            return new RetryPolicyBuilder();
+        }
+
+        /// &lt;summary&gt;
+        /// The builder class of &lt;see cref=&quot;RetryPolicy&quot;/&gt;.
+        /// &lt;/summary&gt;.
+        public class RetryPolicyBuilder
+        {
+            private const int DefaultMaxRetries = 4;
+            private static readonly IBackoffStrategy DefaultBackoffStrategy = new ExponentBackoffStrategy();
+
+            private int maxRetries;
+            private IBackoffStrategy backoffStrategy;
+
+            internal RetryPolicyBuilder()
+            {
+                this.maxRetries = DefaultMaxRetries;
+                this.backoffStrategy = DefaultBackoffStrategy;
+            }
+
+            /// &lt;summary&gt;
+            /// Build a &lt;see cref=&quot;RetryPolicy&quot;/&gt; instance.
+            /// &lt;/summary&gt;
+            /// &lt;returns&gt;A &lt;see cref=&quot;RetryPolicy&quot;/&gt; instance.&lt;/returns&gt;
+            public RetryPolicy Build()
+            {
+                return new RetryPolicy()
+                {
+                    BackoffStrategy = this.backoffStrategy,
+                    MaxRetries = this.maxRetries,
+                };
+            }
+
+            /// &lt;summary&gt;
+            /// Sets the maximum number of retries. If not called, the default value is 4.
+            /// &lt;/summary&gt;
+            /// &lt;param name=&quot;maxRetries&quot;&gt;The maximum number of retries.&lt;/param&gt;
+            /// &lt;returns&gt;The builder instance.&lt;/returns&gt;
+            public RetryPolicyBuilder WithMaxRetries(int maxRetries)
+            {
+                this.maxRetries = maxRetries;
+                return this;
+            }
+
+            /// &lt;summary&gt;
+            /// Sets the backoff strategy of the retry policy. If not called, the default
+            /// &lt;see cref=&quot;ExponentBackoffStrategy&quot;/&gt; would be used.
+            /// &lt;/summary&gt;
+            /// &lt;param name=&quot;backoffStrategy&quot;&gt;The backoff strategy.&lt;/param&gt;
+            /// &lt;returns&gt;The builder instance.&lt;/returns&gt;
+            public RetryPolicyBuilder WithBackoffStrategy(IBackoffStrategy backoffStrategy)
+            {
+                this.backoffStrategy = backoffStrategy;
+                return this;
+            }
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[25,51,25,55,1],[25,56,25,68,1],[30,33,30,37,1],[30,38,30,50,1],[37,9,37,10,1],[38,13,38,45,1],[39,9,39,10,1],[47,13,47,109,1],[52,13,52,42,1],[53,13,53,14,1],[54,17,54,53,1],[55,17,55,63,1],[56,13,56,14,1],[63,13,63,14,1],[64,17,68,19,1],[69,13,69,14,1],[77,13,77,14,1],[78,17,78,46,1],[79,17,79,29,1],[80,13,80,14,1],[89,13,89,14,0],[90,17,90,56,0],[91,17,91,29,0],[92,13,92,14,0]]);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\retry\ExponentBackoffStrategy.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+
+    /// &lt;summary&gt;
+    /// The exponential backoff strategy with an equal jitter.
+    /// &lt;/summary&gt;
+    public class ExponentBackoffStrategy : IBackoffStrategy
+    {
+        public const int DefaultSleepBaseMilliseconds = 10;
+        public const int DefaultSleepCapMilliseconds = 5000;
+
+        private readonly int sleepBaseMilliseconds;
+        private readonly int sleepCapMilliseconds;
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;ExponentBackoffStrategy&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;sleepBaseMilliseconds&quot;&gt;The base of the exponent in milliseconds.&lt;/param&gt;
+        /// &lt;param name=&quot;sleepCapMilliseconds&quot;&gt;The cap of the delay in milliseconds.&lt;/param&gt;
+        public ExponentBackoffStrategy(int sleepBaseMilliseconds, int sleepCapMilliseconds)
+        {
+            ValidationUtils.AssertPositive(sleepBaseMilliseconds, &quot;sleepBaseMilliseconds&quot;);
+            ValidationUtils.AssertPositive(sleepCapMilliseconds, &quot;sleepCapMilliseconds&quot;);
+            ValidationUtils.AssertNotGreater(sleepBaseMilliseconds, sleepCapMilliseconds, &quot;sleepBaseMilliseconds&quot;, &quot;sleepCapMilliseconds&quot;);
+
+            this.sleepBaseMilliseconds = sleepBaseMilliseconds;
+            this.sleepCapMilliseconds = sleepCapMilliseconds;
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;ExponentBackoffStrategy&quot;/&gt; class with
+        /// default settings.
+        /// &lt;/summary&gt;
+        public ExponentBackoffStrategy()
+            : this(DefaultSleepBaseMilliseconds, DefaultSleepCapMilliseconds)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Calculate the delay based on the number of retries attempted. It has an equal jitter,
+        /// which means the delay would be in the 90% to 100% range of the power.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;retryPolicyContext&quot;&gt;The context of retry policy.&lt;/param&gt;
+        /// &lt;returns&gt;The calculated delay.&lt;/returns&gt;
+        public TimeSpan CalculateDelay(RetryPolicyContext retryPolicyContext)
+        {
+            var jitterRand = (new Random().NextDouble() * 0.5) + 0.5;
+            var exponentialBackoff = Math.Min(this.sleepCapMilliseconds, Math.Pow(this.sleepBaseMilliseconds, retryPolicyContext.RetriesAttempted));
+
+            return TimeSpan.FromMilliseconds(jitterRand * exponentialBackoff);
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[34,9,34,92,1],[35,9,35,10,1],[36,13,36,92,1],[37,13,37,90,1],[38,13,38,140,1],[40,13,40,64,1],[41,13,41,62,1],[42,9,42,10,1],[49,15,49,78,1],[50,9,50,10,1],[51,9,51,10,1],[60,9,60,10,1],[61,13,61,70,1],[62,13,62,149,1],[64,13,64,79,1],[65,9,65,10,1]]);
+    </script>
+  </body>
+</html>

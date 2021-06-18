@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\result\AsyncBufferedResult.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Amazon.IonDotnet.Tree;
+
+    /// &lt;summary&gt;
+    /// Implementation of a result which asynchronously buffers all values in memory, rather than stream them from QLDB
+    /// during retrieval.
+    /// This implementation should only be used when the result is to be returned after the parent transaction is to be
+    /// committed.
+    /// &lt;/summary&gt;
+    public class AsyncBufferedResult : BaseBufferedResult, IAsyncResult
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;AsyncBufferedResult&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;values&quot;&gt;Buffer values.&lt;/param&gt;
+        /// &lt;param name=&quot;consumedIOs&quot;&gt;IOUsage statistics.&lt;/param&gt;
+        /// &lt;param name=&quot;timingInformation&quot;&gt;TimingInformation statistics.&lt;/param&gt;
+        private AsyncBufferedResult(List&lt;IIonValue&gt; values, IOUsage? consumedIOs, TimingInformation? timingInformation)
+            : base(values, consumedIOs, timingInformation)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Constructor for the result which asynchronously buffers into the memory the supplied result before closing
+        /// it.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;result&quot;&gt;The result which is to be buffered into memory and closed.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;The &lt;see cref=&quot;AsyncBufferedResult&quot;/&gt; object.&lt;/returns&gt;
+        public static async Task&lt;AsyncBufferedResult&gt; BufferResultAsync(IAsyncResult result)
+        {
+            var values = new List&lt;IIonValue&gt;();
+            await foreach (IIonValue value in result)
+            {
+                values.Add(value);
+            }
+
+            return new AsyncBufferedResult(values, result.GetConsumedIOs(), result.GetTimingInformation());
+        }
+
+        /// &lt;summary&gt;
+        /// Returns an enumerator that iterates through a collection.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;cancellationToken&quot;&gt;Cancellation token.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;
+        /// An &lt;see cref=&quot;IAsyncEnumerator&quot;/&gt; object that can be used to iterate through the collection.
+        /// &lt;/returns&gt;
+        public IAsyncEnumerator&lt;IIonValue&gt; GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            return new ValuesAsyncEnumerator(this.values);
+        }
+
+        /// &lt;summary&gt;
+        /// Asynchronously enumerates a list of Ion values.
+        /// &lt;/summary&gt;
+        internal struct ValuesAsyncEnumerator : IAsyncEnumerator&lt;IIonValue&gt;
+        {
+            private List&lt;IIonValue&gt;.Enumerator valuesEnumerator;
+
+            public ValuesAsyncEnumerator(List&lt;IIonValue&gt; values) =&gt; this.valuesEnumerator = values.GetEnumerator();
+
+            public IIonValue Current =&gt; this.valuesEnumerator.Current;
+
+            public ValueTask&lt;bool&gt; MoveNextAsync() =&gt; new (this.valuesEnumerator.MoveNext());
+
+            public ValueTask DisposeAsync() =&gt; default;
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[37,15,37,59,1],[38,9,38,10,1],[39,9,39,10,1],[50,9,50,10,1],[51,13,51,48,1],[52,13,52,26,1],[52,28,52,43,1],[52,44,52,46,1],[52,47,52,53,1],[53,13,53,14,1],[54,17,54,35,1],[55,13,55,14,1],[57,13,57,108,1],[58,9,58,10,1],[70,9,70,10,1],[71,13,71,59,1],[72,9,72,10,1],[81,69,81,115,1],[83,41,83,70,1],[85,55,85,93,1],[87,48,87,55,1]]);
+    </script>
+  </body>
+</html>

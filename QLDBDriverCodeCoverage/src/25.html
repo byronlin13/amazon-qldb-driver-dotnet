@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\session\QldbSession.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+    using System.Net;
+    using Amazon.QLDBSession.Model;
+    using Amazon.Runtime;
+    using Microsoft.Extensions.Logging;
+
+    /// &lt;summary&gt;
+    /// Represents a session to a specific ledger within QLDB, allowing for execution of PartiQL statements and
+    /// retrieval of the associated results, along with control over transactions for bundling multiple executions.
+    /// &lt;/summary&gt;
+    internal class QldbSession : BaseQldbSession
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;QldbSession&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;session&quot;&gt;The session object representing a communication channel with QLDB.&lt;/param&gt;
+        /// &lt;param name=&quot;logger&quot;&gt;The logger to be used by this.&lt;/param&gt;
+        internal QldbSession(Session session, ILogger logger)
+            : base(session, logger)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Execute the Executor lambda against QLDB and retrieve the result within a transaction.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;func&quot;&gt;The Executor lambda representing the block of code to be executed within the transaction.
+        /// This cannot have any side effects as it may be invoked multiple times, and the result cannot be trusted
+        /// until the transaction is committed.&lt;/param&gt;
+        /// &lt;typeparam name=&quot;T&quot;&gt;The return type.&lt;/typeparam&gt;
+        ///
+        /// &lt;returns&gt;The return value of executing the executor. Note that if you directly return a
+        /// &lt;see cref=&quot;IResult&quot;/&gt;, this will be automatically buffered in memory before the implicit commit to allow
+        /// reading, as the commit will close any open results. Any other &lt;see cref=&quot;IResult&quot;/&gt; instances created within
+        /// the executor block will be invalidated, including if the return value is an object which nests said
+        /// &lt;see cref=&quot;IResult&quot;/&gt; instances within it.&lt;/returns&gt;
+        ///
+        /// &lt;exception cref=&quot;TransactionAbortedException&quot;&gt;
+        /// Thrown if the Executor lambda calls &lt;see cref=&quot;TransactionExecutor.Abort&quot;/&gt;.
+        /// &lt;/exception&gt;
+        /// &lt;exception cref=&quot;AmazonServiceException&quot;&gt;
+        /// Thrown when there is an error executing against QLDB.
+        /// &lt;/exception&gt;
+        internal T Execute&lt;T&gt;(Func&lt;TransactionExecutor, T&gt; func)
+        {
+            ValidationUtils.AssertNotNull(func, &quot;func&quot;);
+
+            Transaction transaction = null;
+            string transactionId = QldbTransactionException.DefaultTransactionId;
+            try
+            {
+                transaction = this.StartTransaction();
+                transactionId = transaction.Id;
+                T returnedValue = func(new TransactionExecutor(transaction));
+                if (returnedValue is IResult result)
+                {
+                    returnedValue = (T)(object)BufferedResult.BufferResult(result);
+                }
+
+                transaction.Commit();
+                return returnedValue;
+            }
+            catch (TransactionAbortedException)
+            {
+                throw;
+            }
+            catch (InvalidSessionException ise)
+            {
+                if (IsTransactionExpiredException(ise))
+                {
+                    throw new QldbTransactionException(transactionId, this.TryAbort(transaction), ise);
+                }
+                else
+                {
+                    throw new RetriableException(transactionId, false, ise);
+                }
+            }
+            catch (OccConflictException occ)
+            {
+                throw new RetriableException(transactionId, true, occ);
+            }
+            catch (AmazonServiceException ase)
+            {
+                if (ase.StatusCode == HttpStatusCode.InternalServerError ||
+                    ase.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    throw new RetriableException(transactionId, this.TryAbort(transaction), ase);
+                }
+
+                throw new QldbTransactionException(transactionId, this.TryAbort(transaction), ase);
+            }
+            catch (Exception e)
+            {
+                throw new QldbTransactionException(transactionId, this.TryAbort(transaction), e);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Create a transaction object which allows for granular control over when a transaction is aborted or
+        /// committed.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;returns&gt;The newly created transaction object.&lt;/returns&gt;
+        internal Transaction StartTransaction()
+        {
+            var startTransactionResult = this.session.StartTransaction();
+            return new Transaction(this.session, startTransactionResult.TransactionId, this.logger);
+        }
+
+        /// &lt;summary&gt;
+        /// Try to abort the transaction.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;transaction&quot;&gt;The transaction to abort.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;Whether the abort call has succeeded.&lt;/returns&gt;
+        private bool TryAbort(Transaction transaction)
+        {
+            try
+            {
+                if (transaction != null)
+                {
+                    transaction.Abort();
+                }
+                else
+                {
+                    this.session.AbortTransaction();
+                }
+            }
+            catch (AmazonServiceException ase)
+            {
+                this.logger.LogWarning(&quot;This session is invalid on ABORT: {}&quot;, ase);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[35,15,35,36,1],[36,9,36,10,1],[37,9,37,10,1],[61,9,61,10,1],[62,13,62,57,1],[64,13,64,44,1],[65,13,65,82,1],[67,13,67,14,1],[68,17,68,55,1],[69,17,69,48,1],[70,17,70,78,1],[71,17,71,53,1],[72,17,72,18,1],[73,21,73,84,1],[74,17,74,18,1],[76,17,76,38,1],[77,17,77,38,1],[79,13,79,48,1],[80,13,80,14,1],[81,17,81,23,1],[83,13,83,48,1],[84,13,84,14,1],[85,17,85,56,1],[86,17,86,18,1],[87,21,87,104,1],[90,17,90,18,1],[91,21,91,77,1],[94,13,94,45,1],[95,13,95,14,1],[96,17,96,72,1],[98,13,98,47,1],[99,13,99,14,1],[100,17,101,73,1],[102,17,102,18,1],[103,21,103,98,1],[106,17,106,100,1],[108,13,108,32,1],[109,13,109,14,1],[110,17,110,98,1],[112,9,112,10,1],[121,9,121,10,1],[122,13,122,74,1],[123,13,123,101,1],[124,9,124,10,1],[134,9,134,10,1],[136,13,136,14,1],[137,17,137,41,1],[138,17,138,18,1],[139,21,139,41,1],[140,17,140,18,1],[142,17,142,18,1],[143,21,143,53,1],[144,17,144,18,1],[145,13,145,14,1],[146,13,146,47,1],[147,13,147,14,1],[148,17,148,85,1],[149,17,149,30,1],[152,13,152,25,1],[153,9,153,10,1]]);
+    </script>
+  </body>
+</html>

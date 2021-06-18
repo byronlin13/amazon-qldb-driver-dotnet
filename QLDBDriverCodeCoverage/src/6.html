@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\driver\BaseQldbDriverBuilder.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System.Runtime.CompilerServices;
+    using Amazon.QLDBSession;
+    using Amazon.Runtime;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
+
+    public abstract class BaseQldbDriverBuilder&lt;TBuilder&gt;
+        where TBuilder : BaseQldbDriverBuilder&lt;TBuilder&gt;
+    {
+        private protected const string Version = &quot;1.2.0&quot;;
+        private protected AmazonQLDBSessionClient sessionClient;
+        private protected int maxConcurrentTransactions = 0;
+        private protected bool logRetries = false;
+
+        private protected abstract TBuilder BuilderInstance { get; }
+
+        private protected virtual string UserAgentString { get; } = &quot;QLDB Driver for .NET v&quot; + Version;
+
+        /// &lt;summary&gt;
+        /// Gets or sets the AWS credentials to construct the &lt;see cref=&quot;AmazonQLDBSessionClient&quot;/&gt; object.
+        /// &lt;/summary&gt;
+        private protected AWSCredentials Credentials { get; set; } = null;
+
+        /// &lt;summary&gt;
+        /// Gets or sets the ledger that should be used for the driver&#39;s sessions.
+        /// &lt;/summary&gt;
+        private protected string LedgerName { get; set; } = null;
+
+        /// &lt;summary&gt;
+        /// Gets or sets the logger to create a driver with.
+        /// &lt;/summary&gt;
+        private protected ILogger Logger { get; set; } = NullLogger.Instance;
+
+        /// &lt;summary&gt;
+        /// Gets or sets the configuration to construct the &lt;see cref=&quot;AmazonQLDBSessionClient&quot;/&gt; object.
+        /// &lt;/summary&gt;
+        private protected AmazonQLDBSessionConfig SessionConfig { get; set; } = null;
+
+        /// &lt;summary&gt;
+        /// Specify the credentials that should be used for the driver&#39;s sessions.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;credentials&quot;&gt;The credentials to create a driver with.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithAWSCredentials(AWSCredentials credentials)
+        {
+            this.Credentials = credentials;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// Specify the ledger that should be used for the driver&#39;s sessions.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;ledgerName&quot;&gt;The name of the ledger to create a driver with.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithLedger(string ledgerName)
+        {
+            ValidationUtils.AssertStringNotEmpty(ledgerName, &quot;ledgerName&quot;);
+            this.LedgerName = ledgerName;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// Specify the logger that should be used for the driver&#39;s sessions.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;logger&quot;&gt;The logger to create a driver with.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithLogger(ILogger logger)
+        {
+            ValidationUtils.AssertNotNull(logger, &quot;logger&quot;);
+            this.Logger = logger;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// Specify the configuration that should be used for the driver&#39;s sessions.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;sessionConfig&quot;&gt;The configuration to create a driver with.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithQLDBSessionConfig(AmazonQLDBSessionConfig sessionConfig)
+        {
+            this.SessionConfig = sessionConfig;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// &lt;para&gt;Specify the maximum number of concurrent transactions the driver can handle.&lt;/para&gt;
+        ///
+        /// &lt;para&gt;Set to 0 by default to use the maximum possible amount allowed by the client
+        /// builder&#39;s configuration.&lt;/para&gt;
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;maxConcurrentTransactions&quot;&gt;
+        /// The maximum number of transactions can be running at any one time. This amount
+        /// cannot exceed the amount set in the &lt;see cref=&quot;Amazon.Runtime.ClientConfig&quot;/&gt; used for this builder.
+        /// &lt;/param&gt;
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithMaxConcurrentTransactions(int maxConcurrentTransactions)
+        {
+            ValidationUtils.AssertNotNegative(maxConcurrentTransactions, &quot;maxConcurrentTransactions&quot;);
+            this.maxConcurrentTransactions = maxConcurrentTransactions;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// Enable logging driver retries at the WARN level.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;This builder object.&lt;/returns&gt;
+        public TBuilder WithRetryLogging()
+        {
+            this.logRetries = true;
+            return this.BuilderInstance;
+        }
+
+        /// &lt;summary&gt;
+        /// Set defaults and verify the current configuration set with the builder.
+        /// &lt;/summary&gt;
+        private protected void PrepareBuild()
+        {
+            this.SessionConfig ??= new AmazonQLDBSessionConfig();
+
+            // Set SDK retry to 0 in order to let driver handle retry logic.
+            this.SessionConfig.MaxErrorRetry = 0;
+            this.sessionClient = this.Credentials == null ? new AmazonQLDBSessionClient(this.SessionConfig)
+                : new AmazonQLDBSessionClient(this.Credentials, this.SessionConfig);
+            this.sessionClient.BeforeRequestEvent += this.SetUserAgent;
+
+            ValidationUtils.AssertStringNotEmpty(this.LedgerName, &quot;ledgerName&quot;);
+
+            if (this.maxConcurrentTransactions == 0)
+            {
+                this.maxConcurrentTransactions = this.SessionConfig.GetType().GetProperty(&quot;MaxConnectionsPerServer&quot;) ==
+                    null ? int.MaxValue : this.GetMaxConn();
+            }
+        }
+
+        private protected void SetUserAgent(object sender, RequestEventArgs eventArgs)
+        {
+            const string UserAgentHeader = &quot;User-Agent&quot;;
+
+            if (eventArgs is not WebServiceRequestEventArgs args || !args.Headers.ContainsKey(UserAgentHeader))
+            {
+                return;
+            }
+
+            if (!args.Headers[UserAgentHeader].Contains(this.UserAgentString))
+            {
+                args.Headers[UserAgentHeader] = args.Headers[UserAgentHeader] + this.UserAgentString;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// We need this to bypass a bug in .Net Framework.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;Max connections per server from the AWS SDK config.&lt;/returns&gt;
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private protected int GetMaxConn()
+        {
+            return this.SessionConfig.MaxConnectionsPerServer ?? int.MaxValue;
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[27,9,27,61,1],[28,9,28,51,1],[32,60,32,64,0],[32,69,32,103,1],[37,56,37,60,1],[37,61,37,65,1],[37,70,37,74,1],[42,47,42,51,1],[42,52,42,56,1],[42,61,42,65,1],[47,44,47,48,1],[47,49,47,53,1],[47,58,47,77,1],[52,67,52,71,1],[52,72,52,76,1],[52,81,52,85,1],[62,9,62,10,1],[63,13,63,44,1],[64,13,64,41,1],[65,9,65,10,1],[75,9,75,10,1],[76,13,76,76,1],[77,13,77,42,1],[78,13,78,41,1],[79,9,79,10,1],[89,9,89,10,1],[90,13,90,61,1],[91,13,91,34,1],[92,13,92,41,1],[93,9,93,10,1],[103,9,103,10,1],[104,13,104,48,1],[105,13,105,41,1],[106,9,106,10,1],[121,9,121,10,1],[122,13,122,103,1],[123,13,123,72,1],[124,13,124,41,1],[125,9,125,10,1],[132,9,132,10,1],[133,13,133,36,1],[134,13,134,41,1],[135,9,135,10,1],[141,9,141,10,1],[142,13,142,66,1],[145,13,145,50,1],[146,13,147,85,1],[148,13,148,72,1],[150,13,150,81,1],[152,13,152,53,1],[153,13,153,14,1],[154,17,155,61,1],[156,13,156,14,1],[157,9,157,10,1],[160,9,160,10,0],[163,13,163,112,0],[164,13,164,14,0],[165,17,165,24,0],[168,13,168,79,0],[169,13,169,14,0],[170,17,170,102,0],[171,13,171,14,0],[172,9,172,10,0],[180,9,180,10,1],[181,13,181,79,1],[182,9,182,10,1]]);
+    </script>
+  </body>
+</html>

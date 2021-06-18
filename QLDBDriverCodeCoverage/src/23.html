@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\session\AsyncQldbSession.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Amazon.QLDBSession.Model;
+    using Amazon.Runtime;
+    using Microsoft.Extensions.Logging;
+
+    /// &lt;summary&gt;
+    /// Represents a session to a specific ledger within QLDB, allowing for asynchronous execution of PartiQL statements
+    /// and retrieval of the associated results, along with control over transactions for bundling multiple executions.
+    /// &lt;/summary&gt;
+    internal class AsyncQldbSession : BaseQldbSession
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;AsyncQldbSession&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;session&quot;&gt;The session object representing a communication channel with QLDB.&lt;/param&gt;
+        /// &lt;param name=&quot;logger&quot;&gt;The logger to be used by this.&lt;/param&gt;
+        internal AsyncQldbSession(Session session, ILogger logger)
+            : base(session, logger)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Execute the Executor lambda asynchronously against QLDB and retrieve the result within a transaction.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;func&quot;&gt;The Executor lambda representing the block of code to be executed within the transaction.
+        /// This cannot have any side effects as it may be invoked multiple times, and the result cannot be trusted
+        /// until the transaction is committed.&lt;/param&gt;
+        /// &lt;param name=&quot;cancellationToken&quot;&gt;A cancellation token that can be used by other objects or threads to receive
+        /// notice of cancellation.&lt;/param&gt;
+        /// &lt;typeparam name=&quot;T&quot;&gt;The return type.&lt;/typeparam&gt;
+        ///
+        /// &lt;returns&gt;The return value of executing the executor. Note that if you directly return a
+        /// &lt;see cref=&quot;IAsyncResult&quot;/&gt;, this will be automatically buffered in memory before the implicit commit to
+        /// allow reading, as the commit will close any open results. Any other &lt;see cref=&quot;IAsyncResult&quot;/&gt; instances
+        /// created within the executor block will be invalidated, including if the return value is an object which
+        /// nests said &lt;see cref=&quot;IAsyncResult&quot;/&gt; instances within it.
+        /// &lt;/returns&gt;
+        ///
+        /// &lt;exception cref=&quot;TransactionAbortedException&quot;&gt;
+        /// Thrown if the Executor lambda calls &lt;see cref=&quot;AsyncTransactionExecutor.Abort&quot;/&gt;.
+        /// &lt;/exception&gt;
+        /// &lt;exception cref=&quot;AmazonServiceException&quot;&gt;
+        /// Thrown when there is an error executing against QLDB.
+        /// &lt;/exception&gt;
+        internal async Task&lt;T&gt; Execute&lt;T&gt;(
+            Func&lt;AsyncTransactionExecutor, Task&lt;T&gt;&gt; func,
+            CancellationToken cancellationToken)
+        {
+            ValidationUtils.AssertNotNull(func, &quot;func&quot;);
+
+            AsyncTransaction transaction = null;
+            string transactionId = QldbTransactionException.DefaultTransactionId;
+            try
+            {
+                transaction = await this.StartTransaction(cancellationToken);
+                transactionId = transaction.Id;
+                T returnedValue = await func(new AsyncTransactionExecutor(transaction));
+                if (returnedValue is IAsyncResult result)
+                {
+                    returnedValue = (T)(object)(await AsyncBufferedResult.BufferResultAsync(result));
+                }
+
+                await transaction.Commit();
+                return returnedValue;
+            }
+            catch (TransactionAbortedException)
+            {
+                throw;
+            }
+            catch (InvalidSessionException ise)
+            {
+                if (IsTransactionExpiredException(ise))
+                {
+                    throw new QldbTransactionException(
+                        transactionId,
+                        await this.TryAbort(transaction, cancellationToken),
+                        ise);
+                }
+                else
+                {
+                    throw new RetriableException(transactionId, false, ise);
+                }
+            }
+            catch (OccConflictException occ)
+            {
+                throw new RetriableException(transactionId, true, occ);
+            }
+            catch (AmazonServiceException ase)
+            {
+                if (ase.StatusCode == HttpStatusCode.InternalServerError ||
+                    ase.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    throw new RetriableException(
+                        transactionId,
+                        await this.TryAbort(transaction, cancellationToken),
+                        ase);
+                }
+
+                throw new QldbTransactionException(
+                    transactionId,
+                    await this.TryAbort(transaction, cancellationToken),
+                    ase);
+            }
+            catch (Exception e)
+            {
+                throw new QldbTransactionException(
+                    transactionId,
+                    await this.TryAbort(transaction, cancellationToken),
+                    e);
+            }
+            finally
+            {
+                transaction?.Dispose();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Create a transaction object which allows for granular asynchronous control over when a transaction is
+        /// aborted or committed.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;cancellationToken&quot;&gt;
+        /// A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+        /// &lt;/param&gt;
+        ///
+        /// &lt;returns&gt;The newly created transaction object.&lt;/returns&gt;
+        internal virtual async Task&lt;AsyncTransaction&gt; StartTransaction(CancellationToken cancellationToken)
+        {
+            var startTransactionResult = await this.session.StartTransactionAsync(cancellationToken);
+            return new AsyncTransaction(
+                this.session,
+                startTransactionResult.TransactionId,
+                this.logger,
+                cancellationToken);
+        }
+
+        /// &lt;summary&gt;
+        /// Try to abort the transaction.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;transaction&quot;&gt;
+        /// The transaction to abort.
+        /// &lt;/param&gt;
+        /// &lt;param name=&quot;cancellationToken&quot;&gt;
+        /// A cancellation token that can be used by other objects or threads to receive notice of cancellation.
+        /// &lt;/param&gt;
+        ///
+        /// &lt;returns&gt;Whether the abort call has succeeded.&lt;/returns&gt;
+        private async Task&lt;bool&gt; TryAbort(AsyncTransaction transaction, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (transaction != null)
+                {
+                    await transaction.Abort();
+                }
+                else
+                {
+                    await this.session.AbortTransactionAsync(cancellationToken);
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogWarning(&quot;This session is invalid on ABORT: {}&quot;, e);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[37,15,37,36,1],[38,9,38,10,1],[39,9,39,10,1],[68,9,68,10,1],[69,13,69,57,1],[71,13,71,49,1],[72,13,72,82,1],[74,13,74,14,1],[75,17,75,78,1],[76,17,76,48,1],[77,17,77,89,1],[78,17,78,58,1],[79,17,79,18,1],[80,21,80,102,1],[81,17,81,18,1],[83,17,83,44,1],[84,17,84,38,1],[86,13,86,48,1],[87,13,87,14,1],[88,17,88,23,1],[90,13,90,48,1],[91,13,91,14,1],[92,17,92,56,1],[93,17,93,18,1],[94,21,97,30,1],[100,17,100,18,1],[101,21,101,77,1],[104,13,104,45,1],[105,13,105,14,1],[106,17,106,72,1],[108,13,108,47,1],[109,13,109,14,1],[110,17,111,73,1],[112,17,112,18,1],[113,21,116,30,1],[119,17,122,26,1],[124,13,124,32,1],[125,13,125,14,1],[126,17,129,24,1],[132,13,132,14,1],[133,17,133,40,1],[134,13,134,14,1],[135,9,135,10,1],[148,9,148,10,1],[149,13,149,102,1],[150,13,154,36,1],[155,9,155,10,1],[170,9,170,10,1],[172,13,172,14,1],[173,17,173,41,1],[174,17,174,18,1],[175,21,175,47,1],[176,17,176,18,1],[178,17,178,18,1],[179,21,179,81,1],[180,17,180,18,1],[181,13,181,14,1],[182,13,182,32,1],[183,13,183,14,1],[184,17,184,83,1],[185,17,185,30,1],[188,13,188,25,1],[189,9,189,10,1]]);
+    </script>
+  </body>
+</html>

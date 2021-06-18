@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\result\BufferedResult.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System.Collections;
+    using System.Collections.Generic;
+    using Amazon.IonDotnet.Tree;
+
+    /// &lt;summary&gt;
+    /// Implementation of a result which buffers all values in memory, rather than stream them from QLDB during
+    /// retrieval.
+    /// This implementation should only be used when the result is to be returned after the parent transaction is to be
+    /// committed.
+    /// &lt;/summary&gt;
+    public class BufferedResult : BaseBufferedResult, IResult
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;BufferedResult&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;values&quot;&gt;Buffer values.&lt;/param&gt;
+        /// &lt;param name=&quot;consumedIOs&quot;&gt;IOUsage statistics.&lt;/param&gt;
+        /// &lt;param name=&quot;timingInformation&quot;&gt;TimingInformation statistics.&lt;/param&gt;
+        private BufferedResult(List&lt;IIonValue&gt; values, IOUsage? consumedIOs, TimingInformation? timingInformation)
+            : base(values, consumedIOs, timingInformation)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Constructor for the result which buffers into the memory the supplied result before closing it.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;result&quot;&gt;The result which is to be buffered into memory and closed.&lt;/param&gt;
+        ///
+        /// &lt;returns&gt;The &lt;see cref=&quot;BufferedResult&quot;/&gt; object.&lt;/returns&gt;
+        public static BufferedResult BufferResult(IResult result)
+        {
+            var values = new List&lt;IIonValue&gt;();
+            foreach (IIonValue value in result)
+            {
+                values.Add(value);
+            }
+
+            return new BufferedResult(values, result.GetConsumedIOs(), result.GetTimingInformation());
+        }
+
+        /// &lt;summary&gt;
+        /// Returns an enumerator that iterates through a collection.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;An &lt;see cref=&quot;IEnumerator&quot;/&gt; object that can be used to iterate through the collection.&lt;/returns&gt;
+        public IEnumerator&lt;IIonValue&gt; GetEnumerator()
+        {
+            return this.values.GetEnumerator();
+        }
+
+        /// &lt;summary&gt;
+        /// Returns an enumerator that iterates through a collection.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;An &lt;see cref=&quot;IEnumerator&quot;/&gt; object that can be used to iterate through the collection.&lt;/returns&gt;
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[36,15,36,59,1],[37,9,37,10,1],[38,9,38,10,1],[48,9,48,10,1],[49,13,49,48,1],[50,13,50,20,1],[50,22,50,37,1],[50,38,50,40,1],[50,41,50,47,1],[51,13,51,14,1],[52,17,52,35,1],[53,13,53,14,1],[55,13,55,103,1],[56,9,56,10,1],[63,9,63,10,1],[64,13,64,48,1],[65,9,65,10,1],[72,9,72,10,0],[73,13,73,41,0],[74,9,74,10,0]]);
+    </script>
+  </body>
+</html>

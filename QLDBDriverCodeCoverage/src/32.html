@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\utils\ValidationUtils.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+
+    /// &lt;summary&gt;
+    /// Static utility methods to use for basic validations.
+    /// &lt;/summary&gt;
+    internal static class ValidationUtils
+    {
+        /// &lt;summary&gt;
+        /// Validates that the text is not Null nor empty.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;str&quot;&gt;The string to validate.&lt;/param&gt;
+        /// &lt;param name=&quot;fieldName&quot;&gt;Name of the parameter.&lt;/param&gt;
+        internal static void AssertStringNotEmpty(string str, string fieldName)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                throw new ArgumentException(&quot;Parameter must not be null or empty.&quot;, fieldName);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Validates that the integer is not negative.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;num&quot;&gt;The integer to validate.&lt;/param&gt;
+        /// &lt;param name=&quot;fieldName&quot;&gt;Name of the parameter.&lt;/param&gt;
+        internal static void AssertNotNegative(int num, string fieldName)
+        {
+            if (num &lt; 0)
+            {
+                throw new ArgumentException(&quot;Parameter must not be negative.&quot;, fieldName);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Validates that the integer is positive.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;num&quot;&gt;The integer to validate.&lt;/param&gt;
+        /// &lt;param name=&quot;fieldName&quot;&gt;Name of the parameter.&lt;/param&gt;
+        internal static void AssertPositive(int num, string fieldName)
+        {
+            if (num &lt; 0)
+            {
+                throw new ArgumentException(&quot;Parameter must not be zero or negative.&quot;, fieldName);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Validates that the left integer is not greater than the right integer.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;left&quot;&gt;The left integer.&lt;/param&gt;
+        /// &lt;param name=&quot;right&quot;&gt;The right integer.&lt;/param&gt;
+        /// &lt;param name=&quot;leftName&quot;&gt;Name of the left integer.&lt;/param&gt;
+        /// &lt;param name=&quot;rightName&quot;&gt;Name of the right integer.&lt;/param&gt;
+        internal static void AssertNotGreater(int left, int right, string leftName, string rightName)
+        {
+            if (left &gt; right)
+            {
+                throw new ArgumentException(string.Format(&quot;Parameter {0} cannot be greater than {1}.&quot;, leftName, rightName), leftName);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Validates that the input is not Null.
+        /// &lt;/summary&gt;
+        ///
+        /// &lt;param name=&quot;obj&quot;&gt;The object to validate.&lt;/param&gt;
+        /// &lt;param name=&quot;fieldName&quot;&gt;Name of the parameter.&lt;/param&gt;
+        internal static void AssertNotNull(object obj, string fieldName)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentException(&quot;Parameter must not be null.&quot;, fieldName);
+            }
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[30,9,30,10,1],[31,13,31,43,1],[32,13,32,14,1],[33,17,33,96,1],[35,9,35,10,1],[44,9,44,10,1],[45,13,45,25,1],[46,13,46,14,1],[47,17,47,91,1],[49,9,49,10,1],[58,9,58,10,1],[59,13,59,25,1],[60,13,60,14,0],[61,17,61,99,0],[63,9,63,10,1],[73,9,73,10,1],[74,13,74,30,1],[75,13,75,14,0],[76,17,76,136,0],[78,9,78,10,1],[87,9,87,10,1],[88,13,88,29,1],[89,13,89,14,1],[90,17,90,87,1],[92,9,92,10,1]]);
+    </script>
+  </body>
+</html>

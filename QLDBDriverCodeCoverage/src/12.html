@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>C:\Repos\amazon-qldb-driver-dotnet\Amazon.QLDB.Driver\exception\RetriableException.cs</title>
+    <script type="text/javascript" src="../js/dotcover.sourceview.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/dotcover.report.css" />
+  </head>
+  <body>
+    <pre id="content" class="source-code">
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the &quot;license&quot; file accompanying this file. This file is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+namespace Amazon.QLDB.Driver
+{
+    using System;
+
+    /// &lt;summary&gt;
+    /// This exception is used internally to allow lower level exceptions to be retried. In some cases, only
+    /// the instances of an exception class with certain data values, e.g. HTTP Status code, are allowed
+    /// to be retried, so we wrapped them into this exception.
+    /// &lt;/summary&gt;
+    internal class RetriableException : QldbTransactionException
+    {
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;RetriableException&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;transactionId&quot;&gt;The transaction ID.&lt;/param&gt;
+        /// &lt;param name=&quot;innerException&quot;&gt;The exception that can be retried.&lt;/param&gt;
+        public RetriableException(string transactionId, Exception innerException)
+            : base(&quot;QLDB retriable exception.&quot;, transactionId, innerException)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;RetriableException&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;transactionId&quot;&gt;The transaction ID.&lt;/param&gt;
+        /// &lt;param name=&quot;isSessionAlive&quot;&gt;Whether the session is still alive.&lt;/param&gt;
+        /// &lt;param name=&quot;innerException&quot;&gt;The exception that can be retried.&lt;/param&gt;
+        public RetriableException(string transactionId, bool isSessionAlive, Exception innerException)
+            : base(&quot;Qldb retriable exception.&quot;, transactionId, isSessionAlive, innerException)
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the &lt;see cref=&quot;RetriableException&quot;/&gt; class.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;message&quot;&gt;Error message.&lt;/param&gt;
+        /// &lt;param name=&quot;transactionId&quot;&gt;The transaction ID.&lt;/param&gt;
+        /// &lt;param name=&quot;isSessionAlive&quot;&gt;Whether the session is still alive.&lt;/param&gt;
+        /// &lt;param name=&quot;innerException&quot;&gt;The exception that can be retried.&lt;/param&gt;
+        public RetriableException(string message, string transactionId, bool isSessionAlive, Exception innerException)
+            : base(message, transactionId, isSessionAlive, innerException)
+        {
+        }
+    }
+}
+
+    </pre>
+    <script type="text/javascript">
+      highlightRanges([[31,15,31,79,0],[32,9,32,10,0],[33,9,33,10,0],[42,15,42,95,1],[43,9,43,10,1],[44,9,44,10,1],[54,15,54,75,0],[55,9,55,10,0],[56,9,56,10,0]]);
+    </script>
+  </body>
+</html>
