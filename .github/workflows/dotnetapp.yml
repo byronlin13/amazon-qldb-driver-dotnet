@@ -28,15 +28,15 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    #- name: Run Unit Test
-      #run: dotnet test Amazon.QLDB.Driver.Tests
+    - name: Run Unit Test
+      run: dotnet test Amazon.QLDB.Driver.Tests /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     #- name: Integration Test
       #run: dotnet test Amazon.QLDB.Driver.IntegrationTests --no-restore --verbosity normal --settings Amazon.QLDB.Driver.IntegrationTests/.runsettings
 
     - name: Uploade to Codecov
       uses: codecov/codecov-action@v1
       with:
-        files: ./QLDBDriverCodeCoverage.xml # optional
+        files: ../../Amazon.QLDB.Driver.Tests/coverage.net48.opencover.xml
         flags: unittests # optional
         name: codecov-umbrella # optional
         verbose: true # optional (default = false
