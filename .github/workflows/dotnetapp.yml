@@ -2,7 +2,7 @@ name: dotnet Application
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, codecov ]
   pull_request:
     branches: [ master ]
 
@@ -28,10 +28,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Run Unit Test
-      run: dotnet test Amazon.QLDB.Driver.Tests
-    - name: Integration Test
-      run: dotnet test Amazon.QLDB.Driver.IntegrationTests --no-restore --verbosity normal --settings Amazon.QLDB.Driver.IntegrationTests/.runsettings
+    #- name: Run Unit Test
+      #run: dotnet test Amazon.QLDB.Driver.Tests
+    #- name: Integration Test
+      #run: dotnet test Amazon.QLDB.Driver.IntegrationTests --no-restore --verbosity normal --settings Amazon.QLDB.Driver.IntegrationTests/.runsettings
 
     - name: Uploade to Codecov
       uses: codecov/codecov-action@v1
