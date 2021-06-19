@@ -32,3 +32,11 @@ jobs:
       run: dotnet test Amazon.QLDB.Driver.Tests
     - name: Integration Test
       run: dotnet test Amazon.QLDB.Driver.IntegrationTests --no-restore --verbosity normal --settings Amazon.QLDB.Driver.IntegrationTests/.runsettings
+
+    - name: Uploade to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        files: ./QLDBDriverCodeCoverage.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+        verbose: true # optional (default = false

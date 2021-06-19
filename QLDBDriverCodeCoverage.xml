@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root CoveredStatements="987" TotalStatements="1102" CoveragePercent="90" ReportType="Xml" DotCoverVersion="2021.1.3">
+  <Assembly Name="Amazon.QLDB.Driver" CoveredStatements="987" TotalStatements="1102" CoveragePercent="90">
+    <Namespace Name="Amazon.QLDB.Driver" CoveredStatements="987" TotalStatements="1102" CoveragePercent="90">
+      <Type Name="AsyncBufferedResult" CoveredStatements="21" TotalStatements="21" CoveragePercent="100">
+        <Type Name="ValuesAsyncEnumerator" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+          <Constructor Name="ValuesAsyncEnumerator(List&lt;IIonValue&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <Property Name="Current:IIonValue" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+            <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          </Property>
+          <Method Name="DisposeAsync():ValueTask" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <Method Name="MoveNextAsync():ValueTask&lt;bool&gt;" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </Type>
+        <Constructor Name="AsyncBufferedResult(List&lt;IIonValue&gt;,Nullable&lt;IOUsage&gt;,Nullable&lt;TimingInformation&gt;)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="BufferResultAsync(IAsyncResult):Task&lt;AsyncBufferedResult&gt;" CoveredStatements="11" TotalStatements="11" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" />
+        </Method>
+        <Method Name="GetAsyncEnumerator(CancellationToken):IAsyncEnumerator&lt;IIonValue&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="AsyncQldbDriver" CoveredStatements="66" TotalStatements="69" CoveragePercent="96">
+        <Constructor Name="AsyncQldbDriver(string,IAmazonQLDBSession,int,ILogger)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="Builder():AsyncQldbDriverBuilder" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Dispose():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(Func&lt;AsyncTransactionExecutor,Task&gt;,CancellationToken):Task" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute(Func&lt;AsyncTransactionExecutor,Task&gt;,RetryPolicy,CancellationToken):Task" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+            <OwnCoverage CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+            <AnonymousMethod Name="(AsyncTransactionExecutor):Task&lt;bool&gt;" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+              <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+            </AnonymousMethod>
+          </InternalCompiledMethod>
+        </Method>
+        <Method Name="Execute&lt;T&gt;(Func&lt;AsyncTransactionExecutor,Task&lt;T&gt;&gt;,CancellationToken):Task&lt;T&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute&lt;T&gt;(Func&lt;AsyncTransactionExecutor,Task&lt;T&gt;&gt;,RetryPolicy,CancellationToken):Task&lt;T&gt;" CoveredStatements="25" TotalStatements="25" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="25" TotalStatements="25" CoveragePercent="100" />
+        </Method>
+        <Method Name="GetSession(CancellationToken):Task&lt;AsyncQldbSession&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Method>
+        <Method Name="ListTableNames(CancellationToken):Task&lt;IEnumerable&lt;string&gt;&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+            <OwnCoverage CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+            <AnonymousMethod Name="(AsyncTransactionExecutor):Task&lt;IAsyncResult&gt;" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+              <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+            </AnonymousMethod>
+            <AnonymousMethod Name="(IIonValue):string" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          </InternalCompiledMethod>
+        </Method>
+        <Method Name="StartNewSession(CancellationToken):Task&lt;AsyncQldbSession&gt;" CoveredStatements="9" TotalStatements="12" CoveragePercent="75">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="9" TotalStatements="12" CoveragePercent="75" />
+        </Method>
+      </Type>
+      <Type Name="AsyncQldbDriverBuilder" CoveredStatements="8" TotalStatements="9" CoveragePercent="89">
+        <Constructor Name="AsyncQldbDriverBuilder()" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Property Name="BuilderInstance:AsyncQldbDriverBuilder" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </Property>
+        <Property Name="UserAgentString:string" CoveredStatements="0" TotalStatements="1" CoveragePercent="0">
+          <PropertyGetter CoveredStatements="0" TotalStatements="1" CoveragePercent="0" />
+        </Property>
+        <Method Name="Build():AsyncQldbDriver" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+      </Type>
+      <Type Name="AsyncQldbSession" CoveredStatements="63" TotalStatements="63" CoveragePercent="100">
+        <Constructor Name="AsyncQldbSession(Session,ILogger)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute&lt;T&gt;(Func&lt;AsyncTransactionExecutor,Task&lt;T&gt;&gt;,CancellationToken):Task&lt;T&gt;" CoveredStatements="40" TotalStatements="40" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="40" TotalStatements="40" CoveragePercent="100" />
+        </Method>
+        <Method Name="StartTransaction(CancellationToken):Task&lt;AsyncTransaction&gt;" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        </Method>
+        <Method Name="TryAbort(AsyncTransaction,CancellationToken):Task&lt;bool&gt;" CoveredStatements="16" TotalStatements="16" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="16" TotalStatements="16" CoveragePercent="100" />
+        </Method>
+      </Type>
+      <Type Name="AsyncResult" CoveredStatements="42" TotalStatements="45" CoveragePercent="93">
+        <Type Name="IonAsyncEnumerator" CoveredStatements="23" TotalStatements="23" CoveragePercent="100">
+          <Constructor Name="IonAsyncEnumerator(Session,string,ExecuteStatementResult,CancellationToken)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+          <Method Name="DisposeAsync():ValueTask" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <Method Name="FetchPage():Task" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+            <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+          </Method>
+          <Method Name="MoveNextAsync():ValueTask&lt;bool&gt;" CoveredStatements="10" TotalStatements="10" CoveragePercent="100">
+            <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="10" TotalStatements="10" CoveragePercent="100" />
+          </Method>
+        </Type>
+        <Constructor Name="AsyncResult(Session,string,ExecuteStatementResult,CancellationToken)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="GetAsyncEnumerator(CancellationToken):IAsyncEnumerator&lt;IIonValue&gt;" CoveredStatements="8" TotalStatements="11" CoveragePercent="73" />
+        <Method Name="GetConsumedIOs():Nullable&lt;IOUsage&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="GetTimingInformation():Nullable&lt;TimingInformation&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="AsyncTransaction" CoveredStatements="39" TotalStatements="42" CoveragePercent="93">
+        <Constructor Name="AsyncTransaction(Session,string,ILogger,CancellationToken)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="Abort():Task" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Method>
+        <Method Name="Commit():Task" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="13" TotalStatements="13" CoveragePercent="100" />
+        </Method>
+        <Method Name="Dispose():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string):Task&lt;IAsyncResult&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute(string,List&lt;IIonValue&gt;):Task&lt;IAsyncResult&gt;" CoveredStatements="12" TotalStatements="12" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="12" TotalStatements="12" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute(string,params IIonValue[]):Task&lt;IAsyncResult&gt;" CoveredStatements="0" TotalStatements="3" CoveragePercent="0">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        </Method>
+      </Type>
+      <Type Name="AsyncTransactionExecutor" CoveredStatements="17" TotalStatements="20" CoveragePercent="85">
+        <Constructor Name="AsyncTransactionExecutor(AsyncTransaction)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="Abort():Task" CoveredStatements="4" TotalStatements="7" CoveragePercent="57">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="4" TotalStatements="7" CoveragePercent="57" />
+        </Method>
+        <Method Name="Execute(string):Task&lt;IAsyncResult&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string,List&lt;IIonValue&gt;):Task&lt;IAsyncResult&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string,params IIonValue[]):Task&lt;IAsyncResult&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="BaseBufferedResult" CoveredStatements="12" TotalStatements="12" CoveragePercent="100">
+        <Constructor Name="BaseBufferedResult(List&lt;IIonValue&gt;,Nullable&lt;IOUsage&gt;,Nullable&lt;TimingInformation&gt;)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        <Method Name="GetConsumedIOs():Nullable&lt;IOUsage&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="GetTimingInformation():Nullable&lt;TimingInformation&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="BaseIonEnumerator" CoveredStatements="43" TotalStatements="43" CoveragePercent="100">
+        <Constructor Name="BaseIonEnumerator(Session,string,ExecuteStatementResult)" CoveredStatements="19" TotalStatements="19" CoveragePercent="100" />
+        <Constructor Name="BaseIonEnumerator()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        <Property Name="Current:IIonValue" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        </Property>
+        <Method Name="GetConsumedIOs():Nullable&lt;IOUsage&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        <Method Name="GetTimingInformation():Nullable&lt;TimingInformation&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="UpdateMetrics(FetchPageResult):void" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" />
+      </Type>
+      <Type Name="BaseQldbDriverBuilder&lt;TBuilder&gt;" CoveredStatements="56" TotalStatements="66" CoveragePercent="85">
+        <Constructor Name="BaseQldbDriverBuilder()" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" />
+        <AutoProperty Name="Credentials:AWSCredentials" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="LedgerName:string" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="Logger:ILogger" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="SessionConfig:AmazonQLDBSessionConfig" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="UserAgentString:string" CoveredStatements="0" TotalStatements="1" CoveragePercent="0">
+          <PropertyGetter CoveredStatements="0" TotalStatements="1" CoveragePercent="0" />
+        </AutoProperty>
+        <Method Name="GetMaxConn():int" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="PrepareBuild():void" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" />
+        <Method Name="SetUserAgent(object,RequestEventArgs):void" CoveredStatements="0" TotalStatements="9" CoveragePercent="0" />
+        <Method Name="WithAWSCredentials(AWSCredentials):TBuilder" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="WithLedger(string):TBuilder" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="WithLogger(ILogger):TBuilder" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="WithMaxConcurrentTransactions(int):TBuilder" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="WithQLDBSessionConfig(AmazonQLDBSessionConfig):TBuilder" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="WithRetryLogging():TBuilder" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+      </Type>
+      <Type Name="BaseQldbSession" CoveredStatements="11" TotalStatements="14" CoveragePercent="79">
+        <Constructor Name="BaseQldbSession(Session,ILogger)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="End():void" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Method Name="GetSessionId():string" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="IsTransactionExpiredException(InvalidSessionException):bool" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="BaseTransaction" CoveredStatements="15" TotalStatements="19" CoveragePercent="79">
+        <Constructor Name="BaseTransaction(Session,string,ILogger)" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" />
+        <Property Name="Id:string" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </Property>
+        <Method Name="Dot(QldbHash,string,List&lt;IIonValue&gt;):QldbHash" CoveredStatements="7" TotalStatements="11" CoveragePercent="64" />
+      </Type>
+      <Type Name="BufferedResult" CoveredStatements="17" TotalStatements="20" CoveragePercent="85">
+        <Constructor Name="BufferedResult(List&lt;IIonValue&gt;,Nullable&lt;IOUsage&gt;,Nullable&lt;TimingInformation&gt;)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="BufferResult(IResult):BufferedResult" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" />
+        <Method Name="GetEnumerator():IEnumerator&lt;IIonValue&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="System.Collections.IEnumerable.GetEnumerator():IEnumerator" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="ExponentBackoffStrategy" CoveredStatements="16" TotalStatements="16" CoveragePercent="100">
+        <Constructor Name="ExponentBackoffStrategy(int,int)" CoveredStatements="8" TotalStatements="8" CoveragePercent="100" />
+        <Constructor Name="ExponentBackoffStrategy()" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="CalculateDelay(RetryPolicyContext):TimeSpan" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+      </Type>
+      <Type Name="IOUsage" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+        <Constructor Name="IOUsage(long,long)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <AutoProperty Name="ReadIOs:long" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="WriteIOs:long" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+      </Type>
+      <Type Name="QldbDriver" CoveredStatements="80" TotalStatements="80" CoveragePercent="100">
+        <Constructor Name="QldbDriver(string,IAmazonQLDBSession,int,ILogger)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="Builder():QldbDriverBuilder" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Dispose():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(Action&lt;TransactionExecutor&gt;):void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(Action&lt;TransactionExecutor&gt;,Action&lt;int&gt;):void" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+          <OwnCoverage CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <AnonymousMethod Name="(TransactionExecutor):bool" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute(Action&lt;TransactionExecutor&gt;,RetryPolicy):void" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+          <OwnCoverage CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <AnonymousMethod Name="(TransactionExecutor):bool" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        </Method>
+        <Method Name="Execute&lt;T&gt;(Func&lt;TransactionExecutor,T&gt;):T" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute&lt;T&gt;(Func&lt;TransactionExecutor,T&gt;,Action&lt;int&gt;):T" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute&lt;T&gt;(Func&lt;TransactionExecutor,T&gt;,RetryPolicy):T" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute&lt;T&gt;(Func&lt;TransactionExecutor,T&gt;,RetryPolicy,Action&lt;int&gt;):T" CoveredStatements="25" TotalStatements="25" CoveragePercent="100" />
+        <Method Name="GetSession():QldbSession" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="ListTableNames():IEnumerable&lt;string&gt;" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+          <OwnCoverage CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <AnonymousMethod Name="(TransactionExecutor):IResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <AnonymousMethod Name="(IIonValue):string" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </Method>
+        <Method Name="StartNewSession():QldbSession" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" />
+      </Type>
+      <Type Name="QldbDriverBase&lt;T&gt;" CoveredStatements="88" TotalStatements="111" CoveragePercent="79">
+        <Constructor Name="QldbDriverBase(string,IAmazonQLDBSession,int,ILogger)" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" />
+        <Constructor Name="QldbDriverBase()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        <Method Name="Dispose():void" CoveredStatements="10" TotalStatements="13" CoveragePercent="77" />
+        <Method Name="GetIsSessionDeadAndThrowIfNoRetry(QldbTransactionException,T,int,int):bool" CoveredStatements="32" TotalStatements="38" CoveragePercent="84" />
+        <Method Name="GetSessionFromPool():T" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" />
+        <Method Name="GetShouldReplaceDeadSessionOrThrowIfNoRetry(QldbTransactionException,T,int,RetryPolicy,Action&lt;int&gt;):bool" CoveredStatements="8" TotalStatements="15" CoveragePercent="53" />
+        <Method Name="GetShouldReplaceDeadSessionOrThrowIfNoRetryAsync(QldbTransactionException,T,int,RetryPolicy,CancellationToken):Task&lt;bool&gt;" CoveredStatements="8" TotalStatements="15" CoveragePercent="53">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="8" TotalStatements="15" CoveragePercent="53" />
+        </Method>
+        <Method Name="ReleaseSession(T):void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="ThrowIfClosed():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+      </Type>
+      <Type Name="QldbDriverBuilder" CoveredStatements="8" TotalStatements="8" CoveragePercent="100">
+        <Constructor Name="QldbDriverBuilder()" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Property Name="BuilderInstance:QldbDriverBuilder" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </Property>
+        <Method Name="Build():QldbDriver" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+      </Type>
+      <Type Name="QldbDriverException" CoveredStatements="3" TotalStatements="15" CoveragePercent="20">
+        <Constructor Name="QldbDriverException(string)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="QldbDriverException(Exception)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Constructor Name="QldbDriverException(string,Exception)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Constructor Name="QldbDriverException(string,ErrorType,string,string,HttpStatusCode)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Constructor Name="QldbDriverException(string,Exception,ErrorType,string,string,HttpStatusCode)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="QldbHash" CoveredStatements="45" TotalStatements="58" CoveragePercent="78">
+        <Type Name="HashComparer" CoveredStatements="10" TotalStatements="15" CoveragePercent="67">
+          <Method Name="Compare(byte[],byte[]):int" CoveredStatements="10" TotalStatements="15" CoveragePercent="67" />
+        </Type>
+        <Constructor Name="QldbHash(byte[])" CoveredStatements="5" TotalStatements="7" CoveragePercent="71" />
+        <Constructor Name="QldbHash()" CoveredStatements="2" TotalStatements="2" CoveragePercent="100" />
+        <AutoProperty Name="Hash:byte[]" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <Method Name="Dot(QldbHash):QldbHash" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="JoinHashesPairwise(byte[],byte[]):byte[]" CoveredStatements="10" TotalStatements="14" CoveragePercent="71" />
+        <Method Name="ToQldbHash(string):QldbHash" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="ToQldbHash(IIonValue):QldbHash" CoveredStatements="8" TotalStatements="8" CoveragePercent="100" />
+        <Method Name="ToString():string" CoveredStatements="0" TotalStatements="2" CoveragePercent="0" />
+      </Type>
+      <Type Name="QldbSession" CoveredStatements="60" TotalStatements="60" CoveragePercent="100">
+        <Constructor Name="QldbSession(Session,ILogger)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute&lt;T&gt;(Func&lt;TransactionExecutor,T&gt;):T" CoveredStatements="37" TotalStatements="37" CoveragePercent="100" />
+        <Method Name="StartTransaction():Transaction" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="TryAbort(Transaction):bool" CoveredStatements="16" TotalStatements="16" CoveragePercent="100" />
+      </Type>
+      <Type Name="QldbTransactionException" CoveredStatements="19" TotalStatements="22" CoveragePercent="86">
+        <Constructor Name="QldbTransactionException(string)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Constructor Name="QldbTransactionException(string,Exception)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="QldbTransactionException(string,string,Exception)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="QldbTransactionException(string,bool)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="QldbTransactionException(string,bool,Exception)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="QldbTransactionException(string,string,bool,Exception)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <AutoProperty Name="IsSessionAlive:bool" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="TransactionId:string" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+      </Type>
+      <Type Name="Result" CoveredStatements="42" TotalStatements="46" CoveragePercent="91">
+        <Type Name="IonEnumerator" CoveredStatements="24" TotalStatements="25" CoveragePercent="96">
+          <Constructor Name="IonEnumerator(Session,string,ExecuteStatementResult)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <Property Name="System.Collections.IEnumerator.Current:object" CoveredStatements="0" TotalStatements="1" CoveragePercent="0">
+            <PropertyGetter CoveredStatements="0" TotalStatements="1" CoveragePercent="0" />
+          </Property>
+          <Method Name="Dispose():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <Method Name="FetchPage():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+          <Method Name="MoveNext():bool" CoveredStatements="10" TotalStatements="10" CoveragePercent="100" />
+          <Method Name="Reset():void" CoveredStatements="2" TotalStatements="2" CoveragePercent="100" />
+        </Type>
+        <Constructor Name="Result(Session,string,ExecuteStatementResult)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="GetConsumedIOs():Nullable&lt;IOUsage&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="GetEnumerator():IEnumerator&lt;IIonValue&gt;" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" />
+        <Method Name="GetTimingInformation():Nullable&lt;TimingInformation&gt;" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="System.Collections.IEnumerable.GetEnumerator():IEnumerator" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="RetriableException" CoveredStatements="3" TotalStatements="9" CoveragePercent="33">
+        <Constructor Name="RetriableException(string,Exception)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+        <Constructor Name="RetriableException(string,bool,Exception)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="RetriableException(string,string,bool,Exception)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="RetryPolicy" CoveredStatements="20" TotalStatements="24" CoveragePercent="83">
+        <Type Name="RetryPolicyBuilder" CoveredStatements="13" TotalStatements="17" CoveragePercent="76">
+          <Constructor Name="RetryPolicyBuilder()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+          <Constructor Name="RetryPolicyBuilder()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <Method Name="Build():RetryPolicy" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          <Method Name="WithBackoffStrategy(IBackoffStrategy):RetryPolicyBuilder" CoveredStatements="0" TotalStatements="4" CoveragePercent="0" />
+          <Method Name="WithMaxRetries(int):RetryPolicyBuilder" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        </Type>
+        <AutoProperty Name="BackoffStrategy:IBackoffStrategy" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="MaxRetries:int" CoveredStatements="2" TotalStatements="2" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+          <PropertySetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <Method Name="Builder():RetryPolicyBuilder" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="RetryPolicyContext" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+        <Constructor Name="RetryPolicyContext(int,Exception)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <AutoProperty Name="LastException:Exception" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+        <AutoProperty Name="RetriesAttempted:int" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+      </Type>
+      <Type Name="Session" CoveredStatements="107" TotalStatements="111" CoveragePercent="96">
+        <Constructor Name="Session(string,IAmazonQLDBSession,string,string,ILogger)" CoveredStatements="8" TotalStatements="8" CoveragePercent="100" />
+        <Method Name="AbortTransaction():AbortTransactionResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="AbortTransactionAsync(CancellationToken):Task&lt;AbortTransactionResult&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        </Method>
+        <Method Name="CommitTransaction(string,MemoryStream):CommitTransactionResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="CommitTransactionAsync(string,MemoryStream,CancellationToken):Task&lt;CommitTransactionResult&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        </Method>
+        <Method Name="End():void" CoveredStatements="8" TotalStatements="9" CoveragePercent="89">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="8" TotalStatements="9" CoveragePercent="89" />
+        </Method>
+        <Method Name="EndSession():EndSessionResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="EndSessionAsync(CancellationToken):Task&lt;EndSessionResult&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        </Method>
+        <Method Name="ExecuteStatement(string,string,List&lt;IIonValue&gt;):ExecuteStatementResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="ExecuteStatementAsync(string,string,List&lt;IIonValue&gt;,CancellationToken):Task&lt;ExecuteStatementResult&gt;" CoveredStatements="28" TotalStatements="31" CoveragePercent="90">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="28" TotalStatements="31" CoveragePercent="90">
+            <OwnCoverage CoveredStatements="15" TotalStatements="18" CoveragePercent="83" />
+            <AnonymousMethod Name="(IIonValue):ValueHolder" CoveredStatements="10" TotalStatements="10" CoveragePercent="100" />
+            <AnonymousMethod Name="(ValueHolder):void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+          </InternalCompiledMethod>
+        </Method>
+        <Method Name="FetchPage(string,string):FetchPageResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="FetchPageAsync(string,string,CancellationToken):Task&lt;FetchPageResult&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        </Method>
+        <Method Name="SendCommand(SendCommandRequest,CancellationToken):Task&lt;SendCommandResponse&gt;" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        </Method>
+        <Method Name="StartSession(string,IAmazonQLDBSession,ILogger):Session" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="StartSessionAsync(string,IAmazonQLDBSession,ILogger,CancellationToken):Task&lt;Session&gt;" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" />
+        </Method>
+        <Method Name="StartTransaction():StartTransactionResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="StartTransactionAsync(CancellationToken):Task&lt;StartTransactionResult&gt;" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+          <InternalCompiledMethod Name="MoveNext():void" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" />
+        </Method>
+      </Type>
+      <Type Name="TimingInformation" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+        <Constructor Name="TimingInformation(long)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <AutoProperty Name="ProcessingTimeMilliseconds:long" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <PropertyGetter CoveredStatements="1" TotalStatements="1" CoveragePercent="100" />
+        </AutoProperty>
+      </Type>
+      <Type Name="Transaction" CoveredStatements="29" TotalStatements="32" CoveragePercent="91">
+        <Constructor Name="Transaction(Session,string,ILogger)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="Abort():void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Commit():void" CoveredStatements="10" TotalStatements="10" CoveragePercent="100" />
+        <Method Name="Execute(string):IResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string,List&lt;IIonValue&gt;):IResult" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" />
+        <Method Name="Execute(string,params IIonValue[]):IResult" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="TransactionAbortedException" CoveredStatements="3" TotalStatements="6" CoveragePercent="50">
+        <Constructor Name="TransactionAbortedException(string,bool)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Constructor Name="TransactionAbortedException(string,bool,Exception)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" />
+      </Type>
+      <Type Name="TransactionExecutor" CoveredStatements="17" TotalStatements="20" CoveragePercent="85">
+        <Constructor Name="TransactionExecutor(Transaction)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" />
+        <Method Name="Abort():void" CoveredStatements="4" TotalStatements="7" CoveragePercent="57" />
+        <Method Name="Execute(string):IResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string,List&lt;IIonValue&gt;):IResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+        <Method Name="Execute(string,params IIonValue[]):IResult" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" />
+      </Type>
+      <Type Name="ValidationUtils" CoveredStatements="21" TotalStatements="25" CoveragePercent="84">
+        <Method Name="AssertNotGreater(int,int,string,string):void" CoveredStatements="3" TotalStatements="5" CoveragePercent="60" />
+        <Method Name="AssertNotNegative(int,string):void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="AssertNotNull(object,string):void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+        <Method Name="AssertPositive(int,string):void" CoveredStatements="3" TotalStatements="5" CoveragePercent="60" />
+        <Method Name="AssertStringNotEmpty(string,string):void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" />
+      </Type>
+    </Namespace>
+  </Assembly>
+</Root>
